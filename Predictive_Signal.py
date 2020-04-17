@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split, GridSearchCV
 
-
+# function to calculate performance
 def calc_simres(data, alpha, expr, int_balance=1, delay=1):
     simres = pd.DataFrame()
     simres.index.name = 'Dates'
@@ -34,7 +34,7 @@ def calc_simres(data, alpha, expr, int_balance=1, delay=1):
     simres['delay'] = delay
     return simres
 
-
+# function to enforce market neutral
 def op_balance(data, preA, booksize=1):
     preA = pd.DataFrame(preA)
     preA[data['filter'] == 0] = np.nan
@@ -43,7 +43,7 @@ def op_balance(data, preA, booksize=1):
     preA = 2 * booksize * preA.divide(preA.abs().sum(axis=1), axis=0)
     return preA
 
-
+# plot the graph of performance
 def plot_pnl(simres):
     fig = plt.figure(figsize=(12, 7))
     label = 'sp: ' + str(round(simres['sharpe'].values[-1], 2)) + \
@@ -62,11 +62,11 @@ def plot_pnl(simres):
     plt.show()
     plt.close(fig)
 
-
+# helper function to calcuate rolling mean
 def ts_mean(inputs, window):
     return inputs.rolling(window, min_periods=1).mean()
 
-
+# read h5 data
 def read_h5(fname):
     f = h5py.File(fname, 'r')
     data = {}
@@ -74,7 +74,7 @@ def read_h5(fname):
         data[k] = pd.DataFrame(v.value.T)
     return data
 
-
+# grid search for parameters
 def parameter_search(X_train, y_train):
     params = {
         'n_estimators': [20, 50],
@@ -91,7 +91,7 @@ def parameter_search(X_train, y_train):
     gs.fit(X_train, y_train)
     return gs.best_params_
 
-
+# xgboost algorithm
 def ts_xgboost(x0, y0):
     features = [i for i in x0.keys()]
     x1 = []
